@@ -52,6 +52,12 @@ Have fun !
 >- What are Tickle timers used for in RPL ? (You don't have to explain how it works).
 How would you implement a HELLO Flooding attack against a RPL network ? What is a possible defense ?
 
+1. Nodes requesting to join the network will send a *DODAG Information Solicitation* which will be answered by a node in the network with a *DODAG Information Object* message. Once a node has joined the network, his parent sends a *DODAG Information Object* message towards root in order to allow parents node to populate their routing tables. In case a node receives multiple *DIO*, it can choose the best parent according to whatever criteria is important (Strong signal, lower rank, etc). Rank is supposed to represent the depth of the *DODAG*, the more important it is, the further away from the root.
+![](./pictures/RPL.png)
+2. &nbsp;
+   - **Trickle timers** are timers that defines when a node should send a DIO message (which is sent periodically). This timer is built such in a way that a node will transmit a lot in case of a problem in the network (A node going down requiring to adjust paths, etc) but will say almost idle if nothing happens.
+   - A **HELLO Flooding** attack can be performed using DIO messages sent by a rogue node with a strong signal power and good routing metrics. It will make nodes believe they have a good neighbor and they will try to select it.
+   - **Solution** : A good old encryption.
 
 
 ### Mobility
