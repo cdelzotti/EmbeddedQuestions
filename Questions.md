@@ -28,11 +28,17 @@ Have fun !
 >2. What problem of CSMA/CA does CSMA/CA with RTS/CTS solve ? *Explain the problem*.
 >3. Can collisions happen in CSMA/CA with RTS/CTS ? Explain.
 
+1. CSMA/CD uses an *Inter-Frame Spacing* time which is the time a node should wait **on an idle channel** before sending. Some priority can be defined by reducing this IFS for some node and not for others, meaning that an important node would have to wait less time than a non-important one.
+![](./pictures/timeline_csmaca.png)
+2. It solves the *Hidden Station Problem*. In a wireless network, it is possible for two node to communicate with a station without seeing each other. In such a situation, any attempt at detecting collision from a sender is useless. To solve this, CSMA/CA can use  *Request To Send* and *Clear To Send* messages. Typically, a node would send a *RTS* to the base station to request the right to send. The base station would then allow it to send data by responding with a *CTS*. This will allow the base station to put some order in the network and control who's sending packets.
+![](./pictures/hiddenstation.png)
+3. Yes, collision is still possible on control frames, but it not as bad as collision on data frames as control frames are usually much smaller that data ones.
+
 ### CoAP
 
->- What are tokens used for in CoAP ?
->- Describe a possible attack against CoAP's token mechanism. How can you defend against such an attack ?
->- Give two major differences between CoAP and HTTP/1 that make CoAP suitable for constrained environments such as networks with IEEE 802.15.4 . Explain briefly.
+>1. What are tokens used for in CoAP ?
+>2. Describe a possible attack against CoAP's token mechanism. How can you defend against such an attack ?
+>3. Give two major differences between CoAP and HTTP/1 that make CoAP suitable for constrained environments such as networks with IEEE 802.15.4 . Explain briefly.
 
 ### RPL
 
