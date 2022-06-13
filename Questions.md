@@ -77,24 +77,60 @@ How would you implement a HELLO Flooding attack against a RPL network ? What is 
 
 >Does TCP/IP uses in-band or out-of-band signaling for its control information ?
 
+Yes, as it uses the same channel as the data to transfer signalling information (TCP headers, TCP ack, IP update messages, etc).
+
 ### GSM FDMA
 
 >GSM-900 uses FDMA with 124 downlink and 124 uplink frequencies. In practice, why a BTS cannot use all frequencies ?
+
+Because there is always interferences between BTS. To avoid conflicts, neighboring BTS don't use the same frequencies. This implies that a given BTS only uses a fraction of the available frequencies, leaving unused channels to its neighbors.
 
 ### GSM logical channels
 
 >Why does GSM use logical channels that are mapped to physical channels ? Could we not just use physical channels directly ? For example we could define Physical channel 1 = FCCH, Physical Channel 2 = AGCH, etc.
 
+$\text{number of frequencies} \times \text{time division per frequency}$ gives the total number of Mobile Stations can communicate with the Base Station at the same time. Using physical channels (i.e. A certain timeslot in a certain frequency) instead of physical channels would **drastically reduce** the number of Mobile Stations a BS can handle simultaneously (as there is a shitload of different logical channel types).
+
 ### GSM call setup
 
->- To save resources, the base station does not allocate a dedicated channel for every phone in a cell, since most are idle most of the time. But if a phone does not have a dedicated channel, how can it send a message to the base station to start a Phone call ?
->- Can you imagine a concrete situation where the mechanism used by GSM in the previous question fails ?
->- Imagine you are in LLN and you want to call your friend in Sydney (you and your friend have mobile phones). How is the connection established? In particular, how does the network find the destination? (we have not seen all the details in the course, but you should have a rough idea how it’s done)
+>1. To save resources, the base station does not allocate a dedicated channel for every phone in a cell, since most are idle most of the time. But if a phone does not have a dedicated channel, how can it send a message to the base station to start a Phone call ?
+>2. Can you imagine a concrete situation where the mechanism used by GSM in the previous question fails ?
+>3. Imagine you are in LLN and you want to call your friend in Sydney (you and your friend have mobile phones). How is the connection established? In particular, how does the network find the destination? (we have not seen all the details in the course, but you should have a rough idea how it’s done)
+
+1. When starting a phone call, a Mobile Station must reach the Base Station through the Random Access Channel (RACH) which is a channel available to every MS.
+   - In case of collision, the MS waits a random amount of time (like ALOHA)
+   - One the message is sent, the MS waits on another channel, the *Access Granting Channel* (AGCH), for a response.
+2. This connection method can lead to problems when there are too many people trying start a phone call at the same time. This can result in collisions that the random backoff won't efficiently mitigate.
+3. This implies many steps :
+   1. MS reaches the BS on the RACH (as explained above)
+   2. MS waits on the AGCH for the BS response allocating a *Standalone Dedicated Control Chanel* (SDCCH) to the MS.
+   3. MS sends a call request to the BS on the newly attribured *SDCCH*
+   4. The Base Station Controller forwards the message to the network subsystem
+   5. The network subsystem sets up the call if possible and sends and assignment request for a voice channel to the BSC
+      1. To make the call, the Mobile Switching Center, which is connected to the Base Station Subsystem, queries information about the MS initiating the call (Billing infos, current position, etc) using SS7
+      2. The MSC-Gateway contacts the current MSC of the call destination
+      3. This MSC will check destination MS state through its VLR
+      4. MSC sends call to all cells of the Location Area (All cells using the VLR in which the destination is registered)
+      5. **Now you anwer that call you little rat ! Do you understand how hard it was to make your god damn phone ringing ?**
+   6. The BSC allocates available dedicated traffic channel (TCH) to the MS and transfert these information (frequency + timeslot) through the SDCCH.
+   7. The MS sends a message on the Fast Associated Control Channel (FACCH, logical channel on the same physical channel than TCH) telling the BSC that he's not listening to the SDCCH anymore
+   8. The BSC acknowledges it with a message on the FACCH.
+   9.  MS sends an "assignment complete" message to the BSC on FACCH.
+   10. BSC informs the network subsystem that the voice channel has been successfully established.
+   11. Finally, MS can use the TCH to send voice data.
 
 ### Logical channel mapping
 
 >There is an important question that has not been addressed on the slides: How does a MS know the mapping of the logical channels to the physical channels? For dedicated channels like SDCCH and TCH, the answer is on the slides (where?). But how does a MS that enters a cell know what frequencies are used by the BTS of the cell and which timeslots are used for the broadcast and common channels? Try to find some possible solutions. (Be creative. Don’t worry if you don’t find the solution actually used by GSM.)
 
+Conventionally, operators transmit a particular signal on one of the channel at timeslot 0 (reminder : GSM-900 consists of 124 frequency bands, each divided in 8 timeslots). When a new phone arrives to the network, it can simply listen in all 124 possible slots 0 to find the one with a particular signal. This is the *Fast Forwarding Channel* (FFCH). This channel also transmits basic information such that broadcasts channels, etc.
+
 ### From circuits to packets
 
 >The first GSM networks were only used for voice calls, but later GSM was extended to also allow Internet traffic. How would you transport Internet traffic over GSM (without modifying too much the existing infrastructure)? What problems could appear?
+
+This can be performed rather simply by implementing a new type of logical channel : *Packet Data Traffic Channel* (PDTCH) and a *Packet Associated Control Channel* (PACH) for acknowledgments. 
+
+Additionally, we'll need to bundle some timeslots in order to mitigate the limited bandwidth offered by GSM small frequencies.
+
+A MS can request a PDTCH the same way that for a classical TCH (Via RACH and AGCH).
