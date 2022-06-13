@@ -15,14 +15,18 @@ Have fun !
 
 ### Scheduling
 
->- Explain *Priority Inversion*. Draw a picture of an example (i.e. a timeline with several tasks) and show on that picture where and why the priority inversion happens.
->- Explain the *Immediate Priority Ceiling protocol* and show why and how it solves the problem of priority inversion in your example at the previous point.
+>1. Explain *Priority Inversion*. Draw a picture of an example (i.e. a timeline with several tasks) and show on that picture where and why the priority inversion happens.
+>2. Explain the *Immediate Priority Ceiling protocol* and show why and how it solves the problem of priority inversion in your example at the previous point.
+
+1. In a system where tasks can be dependent, a process can be kept waiting because another one is accessing a critical section (typically using mutexes). In such a situation, a high priority process can be kept waiting because a low priority one is in critical section. But this low priority process can itself be interrupted many times by medium priority processes as they preempt over low priority processes, without knowing that there is actually a high priority processing waiting. This can lead to important delays for high priority tasks, which can be dramatic (Airbag opening too late, self-driving car changing direction too late, etc).
+![](./pictures/timeline_priority-inversion.png)
+2. A solution to this problem is the *Immediate Priority Ceiling Protocol*, which states that if $S = \{t_1,t_2,..., t_k\}$ is the set containing every thread that can possibly use a given critical section, then any of this thread receives $\underset{t_i \in S}{max}(prio(t_i))$ as priority value when entering in critical section and until it leaves it. This avoids the priority inversion as a process inherits of the priority of the most important process using the critical section.
 
 ### CSMA
 
->- How can a CSMA/CA give higher priorities to certain frame types ?
->- What problem of CSMA/CA does CSMA/CA with RTS/CTS solve ? *Explain the problem*.
->- Can collisions happen in CSMA/CA with RTS/CTS ? Explain.
+>1. How can a CSMA/CA give higher priorities to certain frame types ?
+>2. What problem of CSMA/CA does CSMA/CA with RTS/CTS solve ? *Explain the problem*.
+>3. Can collisions happen in CSMA/CA with RTS/CTS ? Explain.
 
 ### CoAP
 
