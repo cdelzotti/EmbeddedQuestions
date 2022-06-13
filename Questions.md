@@ -62,9 +62,14 @@ How would you implement a HELLO Flooding attack against a RPL network ? What is 
 
 ### Mobility
 
->- Assume a computer with a mobile address that is brought into a foreign network. Explain the steps done by Mobile IP, so that the computer gets connectivity.
->- What is Triangular Routing ? Explain it and describe why we cannot always use it.
->- In CDMA, an important parameter is the length of the code. What is the advantage of using a long code ? What is the disadvantage ?
+>1. Assume a computer with a mobile address that is brought into a foreign network. Explain the steps done by Mobile IP, so that the computer gets connectivity.
+>2. What is Triangular Routing ? Explain it and describe why we cannot always use it.
+>3. In CDMA, an important parameter is the length of the code. What is the advantage of using a long code ? What is the disadvantage ?
+
+1. ![](./pictures/MobileIP-register.png)
+2. ![](./pictures/mobileIP-triangularRouting.png)
+    - The problem with this configuration is that some middleboxes *between* the visited network and the internet won't like seeing packets with IPs that doesn't seem to belong to their network. Other middlebox won't tolerate to exchange TCP packets without seeing 3-way handshake first (In this configuration, a middlebox might see a SYN and an ACK, but might not see the SYN-ACK as it is transmitted through the Home Network). A solution to this problem is make all the traffic go through the Home Agent, similarly to a VPN.
+3. CDMA allows multiple User Equipment to send at the same time. To do so, each UE receives a code that defines how it should encode a symbol (ex : if a UE wants to send *1* with a code *010011*, it will have to send *-1 +1 -1 -1 +1 +1* over the network). This encoding will allow the receiver to extract each message from the big mess that will be formed by the mix of all the messages sent by different UE at the same time. Obviously, the longer the code is, the slower the data rate is. Antennas tends to give long codes to idle UE. When an UE starts transmitting, it will transmit slowly until it receives a shorter code.
 
 ## Mobile questions
 
