@@ -77,7 +77,7 @@ How would you implement a HELLO Flooding attack against a RPL network ? What is 
 
 >Does TCP/IP uses in-band or out-of-band signaling for its control information ?
 
-Yes, as it uses the same channel as the data to transfer signalling information (TCP headers, TCP ack, IP update messages, etc).
+In-band, as it uses the same channel as the data to transfer signalling information (TCP headers, TCP ack, IP update messages, etc).
 
 ### GSM FDMA
 
@@ -102,22 +102,25 @@ $\text{number of frequencies} \times \text{time division per frequency}$ gives t
    - One the message is sent, the MS waits on another channel, the *Access Granting Channel* (AGCH), for a response.
 2. This connection method can lead to problems when there are too many people trying start a phone call at the same time. This can result in collisions that the random backoff won't efficiently mitigate.
 3. This implies many steps :
-   1. MS reaches the BS on the RACH (as explained above)
-   2. MS waits on the AGCH for the BS response allocating a *Standalone Dedicated Control Chanel* (SDCCH) to the MS.
-   3. MS sends a call request to the BS on the newly attribured *SDCCH*
-   4. The Base Station Controller forwards the message to the network subsystem
-   5. The network subsystem sets up the call if possible and sends and assignment request for a voice channel to the BSC
-      1. To make the call, the Mobile Switching Center, which is connected to the Base Station Subsystem, queries information about the MS initiating the call (Billing infos, current position, etc) using SS7
-      2. The MSC-Gateway contacts the current MSC of the call destination
-      3. This MSC will check destination MS state through its VLR
-      4. MSC sends call to all cells of the Location Area (All cells using the VLR in which the destination is registered)
-      5. **Now you anwer that call you little rat ! Do you understand how hard it was to make your god damn phone ringing ?**
-   6. The BSC allocates available dedicated traffic channel (TCH) to the MS and transfert these information (frequency + timeslot) through the SDCCH.
-   7. The MS sends a message on the Fast Associated Control Channel (FACCH, logical channel on the same physical channel than TCH) telling the BSC that he's not listening to the SDCCH anymore
-   8. The BSC acknowledges it with a message on the FACCH.
-   9.  MS sends an "assignment complete" message to the BSC on FACCH.
-   10. BSC informs the network subsystem that the voice channel has been successfully established.
-   11. Finally, MS can use the TCH to send voice data.
+   
+   0. BTS sends information concerning how MS should contact it in slot 0 of one of the 124 possible frequencies, called the *Fast Forwarding Control Channel*. MS have to look at each in order to find the information it needs (such as the RACH/AGCH channels for example)
+   2. MS reaches the BS on the RACH (as explained above)
+   3. MS waits on the AGCH for the BS response allocating a *Standalone Dedicated Control Chanel* (SDCCH) to the MS.
+   4. MS sends a call request to the BS on the newly attribured *SDCCH*
+   5. The Base Station Controller forwards the message to the network subsystem
+   6. The network subsystem sets up the call if possible and sends and assignment request for a voice channel to the BSC
+      1. To make the call, the Mobile Switching Center, which is connected to the Base Station Subsystem, queries information about the MS initiating the call (Billing infos, current position, etc) in the HLR. It can then refuse to make the call (if MS is out of credit for example) 
+      2. The information is then passed to the MSC-Gateway to be handed to the PSTN
+      3. The information about the incomming arrives to the MSC-G of the operator where the distination is located
+      4. MSC-G query HLR to see in which VLR the destination is located, then forwards the information to the concerned MSC
+      5. MSC check destination MS status (Is it turned of ? Is it still responding ? etc), if its okay all the BSS operated by the MSC sends the call notification to the MS.
+      6. **Now you anwer that call you little rat ! Do you understand how hard it was to make your god damn phone ringing ?**
+   7. The BSC allocates available dedicated traffic channel (TCH) to the MS and transfert these information (frequency + timeslot) through the SDCCH.
+   8. The MS sends a message on the Fast Associated Control Channel (FACCH, logical channel on the same physical channel than TCH) telling the BSC that he's not listening to the SDCCH anymore
+   9. The BSC acknowledges it with a message on the FACCH.
+   10. MS sends an "assignment complete" message to the BSC on FACCH.
+   11. BSC informs the network subsystem that the voice channel has been successfully established.
+   12. Finally, MS can use the TCH to send voice data.
 
 ### Logical channel mapping
 
